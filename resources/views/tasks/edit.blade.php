@@ -2,14 +2,14 @@
 
 @section('content')
 
-    <h1>id: {{ $task->id }} のメッセージ編集ページ</h1>
+    <h1>メッセージ新規作成ページ</h1>
 
-    {!! Form::model($task, ['route' => ['tasks.update', $task->id], 'method' => 'put']) !!}
+    {!! Form::model($task, ['route' => 'tasks.store']) !!}
 
         {!! Form::label('content', 'メッセージ:') !!}
         {!! Form::text('content') !!}
 
-        {!! Form::submit('更新') !!}
+        {!! Form::submit('投稿') !!}
 
     {!! Form::close() !!}
 
