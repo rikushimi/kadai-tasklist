@@ -11,13 +11,22 @@ use App\Task;
 
 class TaskController extends Controller
 {
-     public function index()
+public function index()
     {
-        $tasks = Task::all();
-
-        return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+         $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+            
+            //$tasks = Task::all();
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+            return view('tasks.index', $data);
+        }else {
+            return view('welcome');
+}
     }
 
 
@@ -41,28 +50,55 @@ class TaskController extends Controller
         $task = new Task;
         $task->status = $request->status;    // add
         $task->content = $request->content;
+        $task->user_id = \Auth::user()->id;
         $task->save();
 
 
         return redirect('/');
     }
 
-   public function show($id)
+public function show($id)
     {
+          if(\Auth::check())
+        {
         $task = Task::find($id);
-
+        $user = \Auth::user();
+        
+        if (\Auth::user()->id === $task->user_id) {
         return view('tasks.show', [
             'task' => $task,
+            'user' => $user,
         ]);
+        }
+        else{
+           return redirect('/');
+            }
+        }
+    else{
+        return view ('welcome');
+    }
     }
 
   public function edit($id)
     {
+if(\Auth::check())
+        {
         $task = Task::find($id);
-
+        $user = \Auth::user();
+        
+        if (\Auth::user()->id === $task->user_id) {
         return view('tasks.edit', [
             'task' => $task,
+            'user' => $user,
         ]);
+        }
+        else{
+           return redirect('/');
+            }
+        }
+    else{
+        return view ('welcome');
+    }
     }
 
     public function update(Request $request, $id)
@@ -84,9 +120,23 @@ class TaskController extends Controller
 
  public function destroy($id)
     {
+       if(\Auth::check())
+        {
         $task = Task::find($id);
-        $task->delete();
-
-        return redirect('/');
+        $user = \Auth::user();
+        
+        if (\Auth::user()->id === $task->user_id) {
+        return view('tasks.show', [
+            'task' => $task,
+            'user' => $user,
+        ]);
+        }
+        else{
+           return redirect('/');
+            }
+        }
+        else{
+        return view ('welcome');
+        }
     }
 }
