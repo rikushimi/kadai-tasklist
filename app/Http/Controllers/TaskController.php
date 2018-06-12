@@ -108,35 +108,33 @@ if(\Auth::check())
             'content' => 'required|max:191',
         ]);
 
-
+        $user = \Auth::user();
         $task = Task::find($id);
         $task->status = $request->status;    // add
         $task->content = $request->content;
         $task->save();
-
-
-        return redirect('/');
-    }
-
- public function destroy($id)
-    {
-       if(\Auth::check())
-        {
-        $task = Task::find($id);
-        $user = \Auth::user();
         
         if (\Auth::user()->id === $task->user_id) {
-        return view('tasks.show', [
+        return view('tasks.edit', [
             'task' => $task,
             'user' => $user,
         ]);
-        }
-        else{
+        }else{
            return redirect('/');
             }
+    }
+            
+
+
+    public function destroy($id)
+    {
+        $task = Task::find($id);
+        
+        
+         if (\Auth::user()->id === $task->user_id) {
+            $task->delete();
         }
-        else{
-        return view ('welcome');
-        }
+
+        return redirect('/');
     }
 }
