@@ -101,27 +101,25 @@ if(\Auth::check())
     }
     }
 
-    public function update(Request $request, $id)
+public function update(Request $request, $id)
+
     {
+        if(\Auth::check())
+        {
         $this->validate($request, [
             'status' => 'required|max:10',   // add
             'content' => 'required|max:191',
         ]);
-
-        $user = \Auth::user();
+        
         $task = Task::find($id);
-        $task->status = $request->status;    // add
+        $task->status = $request->status; 
         $task->content = $request->content;
         $task->save();
+
+        }
         
-        if (\Auth::user()->id === $task->user_id) {
-        return view('tasks.edit', [
-            'task' => $task,
-            'user' => $user,
-        ]);
-        }else{
-           return redirect('/');
-            }
+        return redirect('/');
+        
     }
             
 
